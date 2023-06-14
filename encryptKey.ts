@@ -1,16 +1,16 @@
 // Better Privete Key Management
-const ethers = require("ethers");
-const fs = require("fs");
-require("dotenv").config();
+import { ethers } from "ethers"
+import * as fs from "fs"
+import "dotenv/config"
 
 // Run "history -c" to clear history after you encrypted the key
 
 // .env is a way to save private keys, we don't want to just letting those keys to hanging around in .env file
 async function main() {
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY);
+  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!);
   const encryptedJsonKey = await wallet.encrypt(
-    process.env.PRIVATE_KEY_PASSWORD,
-    process.env.PRIVATE_KEY
+    process.env.PRIVATE_KEY_PASSWORD!,
+    process.env.PRIVATE_KEY!
   );
   fs.writeFileSync("./.encryptedKey.json", encryptedJsonKey);
 }

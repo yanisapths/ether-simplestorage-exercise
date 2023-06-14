@@ -1,9 +1,8 @@
-const ethers = require("ethers");
-const fs = require("fs");
-require("dotenv").config();
-// Run "history -c" to clear history after you encrypted the key
-// Using encrypted key:  run on terminal with
-// PRIVATE_KEY_PASSWORD=???????? node deploy.js
+import { ethers } from "ethers"
+import * as fs from "fs"
+import "dotenv/config"
+import { Wallet } from 'ethers';
+
 async function main() {
   const encryptedJson = fs.readFileSync("./.encryptedKey.json", "utf8");
 
@@ -11,14 +10,15 @@ async function main() {
   // 1. Connect to Ganache instances
   // If using WSL, to get URL; go to setting > server > select HOSTNAME: VEther(WSL)
   const provider = new ethers.providers.JsonRpcProvider(
-    process.env.RPC_URL //RPC SERVER ON GANACHE
+    process.env.RPC_URL! //RPC SERVER ON GANACHE
   );
   // 2. Connect to a wallet
-  // You can just use: const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+  // You can just use: 
+  // const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
   // But to be more secure:
-  let wallet = new ethers.Wallet.fromEncryptedJsonSync(
+  let wallet = Wallet.fromEncryptedJsonSync(
     encryptedJson,
-    process.env.PRIVATE_KEY_PASSWORD
+    process.env.PRIVATE_KEY_PASSWORD!
   );
   wallet = await wallet.connect(provider);
   // 3. Grab abi and binary of our contract
@@ -33,7 +33,8 @@ async function main() {
   // 5. Deploy the contract
   const contract = await contractFactory.deploy();
   // 6. Wait for one blok confirmation for a receipt
-  const contractReceipt = await contract.deployTransaction.wait(1); // wait for block confirmation to get receipts
+  await contract.deployTransaction.wait(1); // wait for block confirmation to get receipts
+  console.log(`Contract Address: ${contract.address}`);
   // -----------------------------------------------------------------------------
   // Get number
   const currentFavoriteNumber = await contract.retrieve();
